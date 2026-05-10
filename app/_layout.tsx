@@ -53,6 +53,16 @@ export default function RootLayout() {
               animation: 'slide_from_bottom',
             }}
           />
+          <Stack.Screen
+            name="tutorial"
+            options={{
+              title: 'How to play',
+              headerShown: false,
+              presentation: 'modal',
+              animation: 'slide_from_bottom',
+              gestureEnabled: false,
+            }}
+          />
         </Stack>
         <StatusBar style="auto" />
         {!splashDone ? (
