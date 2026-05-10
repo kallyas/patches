@@ -106,7 +106,6 @@ function GameView({ difficulty, resumeFrom }: GameViewProps) {
   } = game;
 
   const [boardWidth, setBoardWidth] = useState(0);
-  const [elapsed, setElapsed] = useState(0);
   /** Sequential number for the current puzzle ("Patches #N"). 0 until claimed. */
   const [puzzleNumber, setPuzzleNumber] = useState(resumeFrom?.puzzleNumber ?? 0);
 
@@ -148,14 +147,6 @@ function GameView({ difficulty, resumeFrom }: GameViewProps) {
     puzzleNumber,
     difficulty,
   ]);
-
-  // Tick the timer once per second.
-  useEffect(() => {
-    if (state.finishedAt) return;
-    const id = setInterval(() => setElapsed(Date.now() - state.startedAt), 1000);
-    setElapsed(Date.now() - state.startedAt);
-    return () => clearInterval(id);
-  }, [state.startedAt, state.finishedAt]);
 
   // Detect win.
   const winRecorded = useRef(false);
@@ -243,7 +234,6 @@ function GameView({ difficulty, resumeFrom }: GameViewProps) {
 
   const onNextPuzzle = useCallback(() => {
     newPuzzle(difficulty);
-    setElapsed(0);
     setPuzzleNumber(claimPuzzleNumber());
   }, [newPuzzle, difficulty, claimPuzzleNumber]);
 
@@ -267,12 +257,12 @@ function GameView({ difficulty, resumeFrom }: GameViewProps) {
               <Text style={[styles.puzzleNo, { color: c.textMuted }]}>#{puzzleNumber}</Text>
             ) : null}
           </View>
-          <View style={styles.topMetaRight}>
-            <Text style={[styles.timer, { color: c.text }]}>{formatTime(elapsed)}</Text>
-            <Text style={[styles.movesLabel, { color: c.textMuted }]}>
-              {state.moves} {state.moves === 1 ? 'move' : 'moves'}
-            </Text>
-          </View>
+          <Hud
+            scheme={scheme}
+            startedAt={state.startedAt}
+            finishedAt={state.finishedAt}
+            moves={state.moves}
+          />
         </View>
 
         <View style={styles.boardWrap} onLayout={onLayout}>
@@ -321,6 +311,38 @@ function GameView({ difficulty, resumeFrom }: GameViewProps) {
     </View>
   );
 }
+
+interface HudProps {
+  scheme: 'light' | 'dark';
+  startedAt: number;
+  finishedAt: number | null;
+  moves: number;
+}
+
+/**
+ * Owns the per-second timer state locally so its tick re-render does not
+ * propagate to GameView (which would otherwise re-render the Board every
+ * second and throw away its memoized work).
+ */
+const Hud = React.memo(function Hud({ scheme, startedAt, finishedAt, moves }: HudProps) {
+  const c = GameColors[scheme];
+  const [elapsed, setElapsed] = useState(() => Math.max(0, Date.now() - startedAt));
+  useEffect(() => {
+    setElapsed(Math.max(0, Date.now() - startedAt));
+    if (finishedAt) return;
+    const id = setInterval(() => setElapsed(Date.now() - startedAt), 1000);
+    return () => clearInterval(id);
+  }, [startedAt, finishedAt]);
+
+  return (
+    <View style={styles.topMetaRight}>
+      <Text style={[styles.timer, { color: c.text }]}>{formatTime(elapsed)}</Text>
+      <Text style={[styles.movesLabel, { color: c.textMuted }]}>
+        {moves} {moves === 1 ? 'move' : 'moves'}
+      </Text>
+    </View>
+  );
+});
 
 const styles = StyleSheet.create({
   topBar: {
