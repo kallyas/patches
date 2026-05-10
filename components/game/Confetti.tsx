@@ -60,7 +60,7 @@ interface Props {
   count?: number;
 }
 
-export function Confetti({ active, count = 60 }: Props) {
+export function Confetti({ active, count = 40 }: Props) {
   const { width, height } = Dimensions.get('window');
   const pieces = useMemo(() => {
     if (!active) return [];
