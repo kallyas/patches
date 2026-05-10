@@ -1,7 +1,7 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, {
   Easing,
@@ -16,6 +16,7 @@ import { GameColors, patchColor } from '@/game/colors';
 import { clearSavedGame } from '@/game/storage';
 import { Difficulty, ShapeType } from '@/game/types';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useIntroSeen } from '@/hooks/useIntroSeen';
 import { useSavedGame } from '@/hooks/useSavedGame';
 import { avgTimeMs, formatTime, useStats } from '@/hooks/useStats';
 
@@ -65,6 +66,16 @@ export default function HomeScreen() {
   const [difficulty, setDifficulty] = useState<Difficulty>('medium');
   const { stats, recordAbandon } = useStats();
   const { savedGame, refresh: refreshSavedGame } = useSavedGame();
+  const { seen: introSeen, loading: introLoading } = useIntroSeen();
+
+  // First launch (or after a fresh install): jump straight into the
+  // tutorial so the player learns the drag gesture before seeing a real
+  // puzzle. `replace` so Back from the tutorial doesn't bounce here twice.
+  useEffect(() => {
+    if (!introLoading && !introSeen) {
+      router.replace('/tutorial');
+    }
+  }, [introLoading, introSeen, router]);
 
   const onContinue = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});

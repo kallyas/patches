@@ -56,6 +56,22 @@ export default function AboutScreen() {
 
           <View style={styles.section}>
             <Text style={[styles.sectionLabel, { color: c.textMuted }]}>How to play</Text>
+            <Pressable
+              onPress={() => router.push('/tutorial')}
+              style={({ pressed }) => [
+                styles.replayBtn,
+                {
+                  backgroundColor: c.accentSoft,
+                  borderColor: c.accent,
+                  opacity: pressed ? 0.85 : 1,
+                },
+              ]}
+            >
+              <MaterialIcons name="play-circle-outline" size={20} color={c.accent} />
+              <Text style={[styles.replayLabel, { color: c.accent }]}>
+                Replay the interactive walkthrough
+              </Text>
+            </Pressable>
             <View style={styles.rulesList}>
               {RULES.map((r, i) => (
                 <View
@@ -163,6 +179,22 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     textTransform: 'uppercase',
     letterSpacing: 1,
+  },
+  replayBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderRadius: 12,
+    borderWidth: 1.2,
+    marginBottom: 4,
+  },
+  replayLabel: {
+    fontSize: 14,
+    fontWeight: '700',
+    letterSpacing: 0.2,
   },
   rulesList: {
     gap: 10,
