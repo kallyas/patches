@@ -33,7 +33,7 @@ function chipFractions(shape: ShapeType): { w: number; h: number } {
  * matches the patch color for that clue, so when a patch is placed the
  * chip sits inside its own patch's fill.
  */
-export function ClueChip({ shape, area, cellSize, color }: Props) {
+function ClueChipImpl({ shape, area, cellSize, color }: Props) {
   const { w, h } = chipFractions(shape);
   const chipW = cellSize * w;
   const chipH = cellSize * h;
@@ -69,6 +69,8 @@ export function ClueChip({ shape, area, cellSize, color }: Props) {
     </View>
   );
 }
+
+export const ClueChip = React.memo(ClueChipImpl);
 
 /** 2x2 dot pattern on an "any" chip — mirrors the LinkedIn legend cue. */
 function AnyMarkers({ size }: { size: number }) {

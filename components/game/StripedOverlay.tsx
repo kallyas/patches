@@ -21,7 +21,7 @@ interface Props {
  * The stripes run at 45° and use a small dasharray so each stripe reads as
  * a chain of dots rather than a solid line.
  */
-export function StripedOverlay({
+function StripedOverlayImpl({
   width,
   height,
   color,
@@ -58,3 +58,5 @@ export function StripedOverlay({
     </Svg>
   );
 }
+
+export const StripedOverlay = React.memo(StripedOverlayImpl);

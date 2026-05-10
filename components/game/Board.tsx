@@ -43,7 +43,7 @@ interface Props {
  *   - Tap on a placed patch to remove it (corrections).
  *   Drags that begin on a filled cell are ignored.
  */
-export function Board({
+function BoardImpl({
   width,
   puzzle,
   patches,
@@ -472,6 +472,8 @@ export function Board({
     </GestureDetector>
   );
 }
+
+export const Board = React.memo(BoardImpl);
 
 const GridLines = React.memo(function GridLines({
   size,
